@@ -7,7 +7,13 @@
 		"cpus": 2
 	},
 
-	// // Add recommended secrets
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": ".devcontainer/post-create.sh",
+
+	// Use 'postStartCommand' to run commands after the container starts.
+    "postStartCommand": ".devcontainer/post-start.sh",
+
+	// Add recommended secrets
 	"secrets": {
 	 	  "DT_URL": {
 	 		"description": "Dynatrace tenant URL (no trailing slash) eg. https://abc12345.live.dynatrace.com"
