@@ -19,7 +19,7 @@
 	 		"description": "Dynatrace tenant URL (no trailing slash) eg. https://abc12345.live.dynatrace.com"
 		},
 		  "DT_K6_TOKEN": {
-	    	        "description": "Dynatrace API token with `metrics.ingest` permissions"
+	    	        "description": "Dynatrace API token with `metrics.ingest` and `openpipeline.events_sdlc` permissions"
 		}
 	}
 }

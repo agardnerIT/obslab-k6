@@ -15,7 +15,10 @@ Reformat the URL like this: `https://TENANT_ID.live.dynatrace.com` eg. `https://
 
 k6 requires an API token to stream metrics to Dynatrace.
 
-Create an API token with `metrics.ingest` permissions.
+Create an API token with the following permissions:
+
+- `metrics.ingest`
+- `openpipeline.events_sdlc`
 
 ## Start Demo
 
