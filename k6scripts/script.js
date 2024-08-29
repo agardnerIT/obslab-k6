@@ -27,7 +27,7 @@ export function teardown() {
     "event.provider": "k6",
     "event.type": "test",
     "event.category": "finished",
-    "service": "checkoutservice",
+    "service": "dummyservice",
     "duration": options.duration
   }
   let res = http.post(`${__ENV.K6_DYNATRACE_URL}/platform/ingest/v1/events.sdlc`, JSON.stringify(payload), post_params);
