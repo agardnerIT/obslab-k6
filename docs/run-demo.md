@@ -40,6 +40,61 @@ In Dynatrace:
 
 ![notebook showing metrics](images/notebook-showing-metrics.png)
 
+## View Events
+
+When the load test finished, the [teardown function](https://github.com/Dynatrace/obslab-k6/blob/d2e11127f3a9e7665d67ab2015c7e4a2d7599b96/k6scripts/script.js#L17){target=_blank} sends a Software Delivery Lifecycle Event (SDLC) to Dynatrace.
+
+```
+// Run load with 2 virtual users for 1 minute
+export const options = {
+  vus: 2,
+  duration: '1m',
+};
+
+...
+
+export function teardown() {
+  let post_params = {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Api-Token ${__ENV.K6_DYNATRACE_APITOKEN}`
+    },
+  };
+
+  // Send SDLC event at the end of the test
+  let payload = {
+    "event.provider": "k6",
+    "event.type": "test",
+    "event.category": "finished",
+    "service": "dummyservice",
+    "duration": options.duration
+  }
+  let res = http.post(`${__ENV.K6_DYNATRACE_URL}/platform/ingest/v1/events.sdlc`, JSON.stringify(payload), post_params);
+}
+```
+
+Notice that the event contains metadata such as the `provider` and `service` which can be used for filtering in Dynatrace (see DQL below).
+
+This event can be used as a trigger Dynatrace for workflows, synthetic tests, the site reliability guardian and more.
+
+In Dynatrace:
+
+* Press `ctrl + k` and search for `notebooks`
+* Open an existing notebook or create a new one
+* Add a new `DQL` section and paste the following
+
+```
+fetch events
+| filter event.kind == "SDLC_EVENT"
+| filter event.provider == "k6"
+```
+
+
+
+![sdlc event](images/sdlc-event.png)
+
+User exercise: Modify the JSON body to also send the number of Virtual Users (VUs) used to Dynatrace. Re-run the load test to see the new event.
+
 ## View Dashboard
 
 Open the prebuilt dashboard you previously uploaded.
