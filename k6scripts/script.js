@@ -1,10 +1,10 @@
 import http from 'k6/http';
 import { sleep } from 'k6';
 
-// Run load with 10 virtual users for 5 minutes
+// Run load with 2 virtual users for 1 minute
 export const options = {
-  vus: 10,
-  duration: '5m',
+  vus: 2,
+  duration: '1m',
 };
 
 // Send a GET to https://test.k6.io then sleep for 1s
@@ -22,15 +22,13 @@ export function teardown() {
     },
   };
 
-  let test_duration = 2m;
-
   // Send SDLC event at the end of the test
   let payload = {
     "event.provider": "k6",
     "event.type": "test",
     "event.category": "finished",
     "service": "checkoutservice",
-    "duration": test_duration
+    "duration": options.duration
   }
   let res = http.post(`${__ENV.K6_DYNATRACE_URL}/platform/ingest/v1/events.sdlc`, JSON.stringify(payload), post_params);
 }
