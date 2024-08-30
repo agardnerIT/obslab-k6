@@ -107,4 +107,5 @@ The dashboard will begin to be populated with data.
 
 The demo is complete.
 
-## [Click Here to Delete and Cleanup resources...](cleanup.md)
+<div class="grid cards" markdown>
+- [Click Here to Delete and Cleanup resources :octicons-arrow-right-24:](cleanup.md)

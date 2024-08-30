@@ -9,4 +9,6 @@ This demo will run a [Grafana k6](https://k6.io){target=_blank} script and use t
 | Dynatrace Managed  | ✔️                 |
 | Dynatrace SaaS     | ✔️                 |
 
-## [Click Here to Begin...](getting-started.md)
+<div class="grid cards" markdown>
+- [Click Here to Begin :octicons-arrow-right-24:](getting-started.md)
+</div>

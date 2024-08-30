@@ -2,4 +2,7 @@ To cleanup resources, go to [https://github.com/codespaces](https://github.com/c
 
 You may also want to deactivate or delete the API token.
 
-## [What's Next?](whats-next.md)
+<div class="grid cards" markdown>
+
+- [What's Next? :octicons-arrow-right-24:](whats-next.md)
+</div>
