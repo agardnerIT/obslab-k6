@@ -1,3 +1,8 @@
+# Dynatrace Observability Lab: Grafana k6 Observability
+
+--8<-- "snippets/disclaimer.md"
+--8<-- "snippets/view-code.md"
+
 This demo will run a [Grafana k6](https://k6.io){target=_blank} script and use the [Dynatrace output plugin](https://www.dynatrace.com/hub/detail/grafana-k6){target=_blank} to stream metrics to Dynatrace.
 
 ![Dynatrace k6 dashboard](images/k6-dashboard.png)
