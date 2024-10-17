@@ -15,7 +15,7 @@ This architecture also holds true for other load testing tools (eg. JMeter).
 
 !!! tip
 
-    This can (and should be) extended as demonstrated in the [release validation Observability Lab](https://dt-url.net/obslab-release-validation){target=_blank})
+    This can (and should be) extended as demonstrated in the [release validation Observability Lab](https://dt-url.net/obslab-release-validation){target=_blank}
     to include the ability to trigger automated deployment checks.
 
 
