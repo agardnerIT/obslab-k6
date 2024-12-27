@@ -10,10 +10,13 @@ sudo mv runme /usr/local/bin
 cd ..
 rm -rf runme
 
+
 # Set default repository for gh CLI
 # Required for the e2e test harness
 # If it needs to interact with GitHub (eg. create an issue for a failed e2e test)
 gh repo set-default $GITHUB_REPOSITORY
+# Now set up a label, used if / when the e2e test fails
+gh label create "e2e test failed"
 
 # Startup Ping
 # curl -X POST https://grzxx1q7wd.execute-api.us-east-1.amazonaws.com/default/codespace-tracker \

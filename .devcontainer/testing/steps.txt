@@ -1,4 +1,4 @@
 check env vars exist
 wait for docker to start
 docker ps
-docker run k6
+#docker run k6
