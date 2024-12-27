@@ -11,12 +11,9 @@ While you are waiting for the environment, add the dashboard to your Dynatrace e
 
 In the codespace terminal, type `docker ps` and wait until Docker is running.
 
-<!--
-Hidden code block. Used for automation
 ``` {"name": "docker ps"}
 docker ps
 ```
- -->
 
 You should see this:
 
@@ -30,7 +27,7 @@ Now run k6 with the demo script. Copy and paste this as-is into the terminal win
 docker run \
     -e K6_DYNATRACE_URL=$DT_URL \
     -e K6_DYNATRACE_APITOKEN=$DT_K6_TOKEN \
-    --mount type=bind,source=./k6scripts,target=/k6scripts hrexed/xk6-dynatrace-output:0.11 run /k6scripts/script.js \
+    --mount type=bind,source=/workspaces/$RepositoryName/k6scripts,target=/k6scripts hrexed/xk6-dynatrace-output:0.11 run /k6scripts/script.js \
     -o output-dynatrace
 ```
 

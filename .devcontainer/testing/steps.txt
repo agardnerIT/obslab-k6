@@ -1,0 +1,4 @@
+check env vars exist
+wait for docker to start
+docker ps
+docker run k6
