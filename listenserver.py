@@ -87,7 +87,10 @@ def execute_query(body: RequestBody):
 
     if secret_key_input != SECRET_KEY:
         logger.error("invalid secret key")
-        return {}
+        return {
+            "return_code": -1,
+            "output": format_text("Invalid secret key. Please check and try again.")
+        }
     
     snippet_id_to_execute = ""
     
@@ -103,7 +106,10 @@ def execute_query(body: RequestBody):
     # exit
     if ls_output.returncode != 0:
         logger.error(f"output of listing filename: {body.filename} caused an error.")
-        return {}
+        return {
+            "return_code": -1,
+            "output": format_text(f"output of listing filename: {body.filename} caused an error.")
+        }
     
     # Snippet naming logic is the first two strings (alphanumeric only) of the first list with space replaced by a dash
     # lowercased
@@ -150,7 +156,10 @@ def execute_query(body: RequestBody):
     # is invalid, exit immediately
     if snippet_name_to_execute == "":
         logger.error("could not find a valid snippet to execute")
-        return {}
+        return {
+            "return_code": -1,
+            "output": format_text("Could not find a valid snippet to execute")
+        }
 
     if body.filename != "":
         output = subprocess.run(["runme", "--filename", body.filename, "run", snippet_name_to_execute], capture_output=True, text=True)
