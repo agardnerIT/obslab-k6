@@ -36,6 +36,8 @@ gh repo set-default $GITHUB_REPOSITORY
 # Otherwise the entire post-start.sh script could fail
 gh label create "e2e test failed" || true
 
+nohup fastapi run /workspaces/$RepositoryName/listenserver.py &
+
 # Startup Ping
 # curl -X POST https://grzxx1q7wd.execute-api.us-east-1.amazonaws.com/default/codespace-tracker \
 #   -H "Content-Type: application/json" \
