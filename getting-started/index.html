@@ -341,6 +341,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#start-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Start Server
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#gather-details-tenant-id" class="md-nav__link">
     <span class="md-ellipsis">
       Gather Details: Tenant ID
@@ -498,6 +507,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#start-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Start Server
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#gather-details-tenant-id" class="md-nav__link">
     <span class="md-ellipsis">
       Gather Details: Tenant ID
@@ -608,6 +626,11 @@ Alternatively you can right click and choose <code>Copy Local address</code></p>
 </tbody>
 </table>
 <p><button id="save-connection-details" class="md-button" onclick="saveConnectionDetails()">Save Connection Details</button></p>
+<h2 id="start-server">Start Server<a class="headerlink" href="#start-server" title="Permanent link">#</a></h2>
+<p>Start the server now. Run the following command in the codespace terminal.</p>
+<p>This server will receive commands from the browser and use <a href="https://github.com/stateful/runme" target="_blank">runme</a> to find and run that codesnippet from the markdown documentation.</p>
+<div class="highlight"><pre><span></span><code>nohup fastapi run /workspaces/$RepositoryName/listenserver.py &amp;
+</code></pre></div>
 <h2 id="gather-details-tenant-id">Gather Details: Tenant ID<a class="headerlink" href="#gather-details-tenant-id" title="Permanent link">#</a></h2>
 <p>You will need access to a Dynatrace tenant. If you do not have access, <a href="https://dt-url.net/trial" target="_blank">sign up for a free 15 day trial</a>.</p>
 <p>Make a note of your Dynatrace tenant ID. It is the first bit of your URL (eg. <code>abc12345</code> in the following examples):</p>

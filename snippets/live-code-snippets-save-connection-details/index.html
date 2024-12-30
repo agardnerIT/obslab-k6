@@ -403,6 +403,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#start-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Start Server
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -486,6 +495,11 @@ Alternatively you can right click and choose <code>Copy Local address</code></p>
 </tbody>
 </table>
 <p><button id="save-connection-details" class="md-button" onclick="saveConnectionDetails()">Save Connection Details</button></p>
+<h2 id="start-server">Start Server<a class="headerlink" href="#start-server" title="Permanent link">#</a></h2>
+<p>Start the server now. Run the following command in the codespace terminal.</p>
+<p>This server will receive commands from the browser and use <a href="https://github.com/stateful/runme" target="_blank">runme</a> to find and run that codesnippet from the markdown documentation.</p>
+<div class="highlight"><pre><span></span><code>nohup fastapi run /workspaces/$RepositoryName/listenserver.py &amp;
+</code></pre></div>
 
 
 
