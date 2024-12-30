@@ -165,6 +165,7 @@ def execute_query(body: RequestBody):
         output = subprocess.run(["runme", "--filename", body.filename, "run", snippet_name_to_execute], capture_output=True, text=True)
     else: # Run from main list of snippets
         output = subprocess.run(["runme", "run", snippet_name_to_execute], capture_output=True, text=True)
+        print(f"Raw stdout: {output.stdout}")
     
     return_obj = {
         "return_code": output.returncode,
