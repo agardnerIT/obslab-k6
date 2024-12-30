@@ -33,7 +33,9 @@ gh repo set-default $GITHUB_REPOSITORY
 # Now set up a label, used if / when the e2e test fails
 gh label create "e2e test failed"
 
+echo "starting listenserver.py >>"
 nohup fastapi run /workspaces/$RepositoryName/listenserver.py &
+echo "finished post-start.sh"
 
 # Startup Ping
 # curl -X POST https://grzxx1q7wd.execute-api.us-east-1.amazonaws.com/default/codespace-tracker \
