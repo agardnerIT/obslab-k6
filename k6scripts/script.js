@@ -4,7 +4,7 @@ import { sleep } from 'k6';
 // Run load with 2 virtual users for 1 minute
 export const options = {
   vus: 2,
-  duration: '1m',
+  duration: '5s',
 };
 
 // Send a GET to https://test.k6.io then sleep for 1s

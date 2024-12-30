@@ -11,6 +11,14 @@ cd ..
 rm -rf runme
 
 
+# Set secret key to /tmp/secret
+python /workspaces/$RepositoryName/set_secret_key.py
+
+nohup fastapi run /workspaces/$RepositoryName/listenserver.py > /dev/null &
+
+# open listenserver port 8000 publicly
+gh codespace ports visibility 8000:public -c $CODESPACE_NAME
+
 # Set default repository for gh CLI
 # Required for the e2e test harness
 # If it needs to interact with GitHub (eg. create an issue for a failed e2e test)
