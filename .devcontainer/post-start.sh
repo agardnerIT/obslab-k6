@@ -31,7 +31,10 @@ gh codespace ports visibility 8000:public -c $CODESPACE_NAME
 # If it needs to interact with GitHub (eg. create an issue for a failed e2e test)
 gh repo set-default $GITHUB_REPOSITORY
 # Now set up a label, used if / when the e2e test fails
-gh label create "e2e test failed"
+# This may already be set (when demos are re-executed in repos)
+# so catch error and always return true
+# Otherwise the entire post-start.sh script could fail
+gh label create "e2e test failed" || true
 
 # Startup Ping
 # curl -X POST https://grzxx1q7wd.execute-api.us-east-1.amazonaws.com/default/codespace-tracker \
