@@ -26,7 +26,7 @@ docker ps
 
 <button class="executor" onclick="sendRequest(this, 'docker ps')">&#9658;</button>
 
-Now run k6 with the demo script. Copy and paste this as-is into the terminal window:
+Now run k6 with the demo script. This script takes 1 minute to execute so be patient:
 
 ``` {"name": "docker run k6"}
 docker run \

@@ -14,6 +14,13 @@ rm -rf runme
 # Set secret key to /tmp/secret
 python /workspaces/$RepositoryName/set_secret_key.py
 
+# If this is a testing codespace (codespace names starts with testing_)
+# Install testing dependencies
+if [[ $CODESPACE_NAME == testing_* ]];
+then
+  pip install -r /workspaces/$RepositoryName/.devcontainer/testing/requirements.txt
+fi
+
 pip install -r /workspaces/$RepositoryName/requirements.txt
 nohup fastapi run /workspaces/$RepositoryName/listenserver.py > /dev/null &
 

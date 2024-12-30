@@ -8,7 +8,7 @@ def create_github_issue(output):
 subprocess.run(["playwright", "install", "chromium", "chromium-headless-shell"])
 
 # npx --yes playwright install --with-deps
-with open(".devcontainer/testing/steps.txt", mode="r") as steps_file:
+with open("steps.txt", mode="r") as steps_file:
     steps = steps_file.readlines()
 
     for step in steps:
@@ -20,7 +20,7 @@ with open(".devcontainer/testing/steps.txt", mode="r") as steps_file:
         
         if "test_" in step:
             print(f"This step is a Playwright test: {step}")
-            output = subprocess.run(["pytest", f".devcontainer/testing/{step}"], capture_output=True, text=True)
+            output = subprocess.run(["pytest", f"./{step}"], capture_output=True, text=True)
             if output.returncode != 0:
                 create_github_issue(output)
         else:
