@@ -2,5 +2,3 @@ fastapi[standard]==0.115.6
 pydantic==2.10.4
 loguru==0.7.3
 ansi2html==1.9.2
-mkdocs-material==9.5.49
-mkdocs-markdownextradata-plugin==0.2.6

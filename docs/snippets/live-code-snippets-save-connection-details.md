@@ -38,14 +38,14 @@
 
 ## Set Details for Live Code Snippets
 
+Retrieve the URL by going to the `Ports` tab in the codespace, click the row corresponding to port `8000` and press `Ctrl + c`.
+Alternatively you can right click and choose `Copy Local address`
+
 Retrieve authentication token by running this command in your codespace terminal:
 
 ```
 cat /tmp/secret
 ```
-
-Retrieve the URL by going to the `Ports` tab in the codespace, click the row corresponding to port `8000` and press `Ctrl + c`.
-Alternatively you can right click and choose `Copy Local address`
 
 Paste the details into these boxes and click the Save button.
 

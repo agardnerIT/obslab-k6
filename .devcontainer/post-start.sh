@@ -14,6 +14,7 @@ rm -rf runme
 # Set secret key to /tmp/secret
 python /workspaces/$RepositoryName/set_secret_key.py
 
+pip install -r /workspaces/$RepositoryName/requirements.txt
 nohup fastapi run /workspaces/$RepositoryName/listenserver.py > /dev/null &
 
 # open listenserver port 8000 publicly
