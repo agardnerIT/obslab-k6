@@ -56,3 +56,25 @@ Paste the details into these boxes and click the Save button.
 | Secret Key       | <input type="password" id="secretKey" class="connection-input" />  |
 
 <button id="save-connection-details" class="md-button" onclick="saveConnectionDetails()">Save Connection Details</button>
+
+## Start Server
+
+Start the server now. Run the following command in the codespace terminal.
+
+This server will receive commands from the browser and use [runme](https://github.com/stateful/runme){target=_blank} to find and run that code snippet from the markdown documentation.
+
+```
+nohup fastapi run /workspaces/$RepositoryName/listenserver.py &
+```
+
+## Test the connection
+
+--8<-- "snippets/live-code-snippets-button-executor.md"
+
+Click the button below. If you see a green popup at the bottom of the screen, this confirms that the browser to codespace connection works.
+
+``` {"name": "test-connection"}
+echo "Success! The connection works."
+```
+
+<button class="executor" onclick="sendRequest(this, 'test-connection')">&#9658;</button>
