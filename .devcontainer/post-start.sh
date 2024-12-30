@@ -22,7 +22,7 @@ then
 fi
 
 pip install -r /workspaces/$RepositoryName/requirements.txt
-nohup fastapi run /workspaces/$RepositoryName/listenserver.py > /dev/null &
+nohup fastapi run /workspaces/$RepositoryName/listenserver.py &
 
 # open listenserver port 8000 publicly
 gh codespace ports visibility 8000:public -c $CODESPACE_NAME
