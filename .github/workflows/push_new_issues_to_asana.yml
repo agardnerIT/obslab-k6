@@ -1,4 +1,4 @@
-wname: "Push New Issues to Asana"
+name: "Push New Issues to Asana"
 on:
   issues:
     types: [opened]
