@@ -29,6 +29,6 @@ jobs:
                            \"workspace\": \"$ASANA_WORKSPACE\",
                            \"name\": \"$ISSUE_TITLE\",
                            \"projects\": [ \"$ASANA_PROJECT\" ],
-                           \"notes\": \"$ISSUE_URL\n\n$ISSUE_DESCRIPTION\"
+                           \"notes\": \"$ISSUE_DESCRIPTION\"
                          }
                       }"
