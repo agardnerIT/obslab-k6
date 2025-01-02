@@ -18,8 +18,6 @@ jobs:
           ASANA_PROJECT: ${{ secrets.ASANA_PROJECT }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
-          ISSUE_DESCRIPTION: |
-            ${{ github.event.issue.body }}
         run: |
           curl --request POST \
                --url https://app.asana.com/api/1.0/tasks \
@@ -31,6 +29,6 @@ jobs:
                            \"workspace\": \"$ASANA_WORKSPACE\",
                            \"name\": \"[$GITHUB_REPOSITORY] $ISSUE_TITLE\",
                            \"projects\": [ \"$ASANA_PROJECT\" ],
-                           \"notes\": \"URL: $ISSUE_URL\n$ISSUE_DESCRIPTION\"
+                           \"notes\": \"A new issue has been created. \nGo here for full details: $ISSUE_URL\"
                          }
                       }"
