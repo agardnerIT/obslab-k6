@@ -18,7 +18,8 @@ jobs:
           ASANA_PROJECT: ${{ secrets.ASANA_PROJECT }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_URL: ${{ github.event.issue.html_url }}
-          ISSUE_DESCRIPTION: ${{ github.event.issue.body }}
+          ISSUE_DESCRIPTION: |
+            ${{ github.event.issue.body }}
         run: |
           curl --request POST \
                --url https://app.asana.com/api/1.0/tasks \
