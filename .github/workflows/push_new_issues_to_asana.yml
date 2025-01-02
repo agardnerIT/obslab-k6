@@ -15,7 +15,7 @@ jobs:
           ASANA_PAT: ${{ secrets.ASANA_PAT }}
           ASANA_WORKSPACE: ${{ secrets.ASANA_WORKSPACE }}
           ASANA_PROJECT: ${{ secrets.ASANA_PROJECT }}
-          ISSUE_TITLE: ${{ event.issue.title }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
           curl --request POST \
                --url https://app.asana.com/api/1.0/tasks \
