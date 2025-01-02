@@ -24,8 +24,7 @@ with open("steps.txt", mode="r") as steps_file:
             if output.returncode != 0:
                 create_github_issue(output)
         else:
-            # Temp TODO remove
-            print("temporarily skipping runme tests")
-            #output = subprocess.run(["runme", "run", step], capture_output=True, text=True)
-            #if output.returncode != 0:
-            #    create_github_issue(output)
+            output = subprocess.run(["runme", "run", step], capture_output=True, text=True)
+            print(f"[{step}] | {output.returncode} | {output.stdout}")
+            if output.returncode != 0:
+                create_github_issue(output)
