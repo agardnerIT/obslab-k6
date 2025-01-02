@@ -12,6 +12,7 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
       - name: "Open Asana Issue"
         env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
           ASANA_PAT: ${{ secrets.ASANA_PAT }}
           ASANA_WORKSPACE: ${{ secrets.ASANA_WORKSPACE }}
           ASANA_PROJECT: ${{ secrets.ASANA_PROJECT }}
@@ -27,7 +28,7 @@ jobs:
                --data "{
                          \"data\": {
                            \"workspace\": \"$ASANA_WORKSPACE\",
-                           \"name\": \"$ISSUE_TITLE\",
+                           \"name\": \"[$GITHUB_REPOSITORY] $ISSUE_TITLE\",
                            \"projects\": [ \"$ASANA_PROJECT\" ],
                            \"notes\": \"$ISSUE_DESCRIPTION\"
                          }
