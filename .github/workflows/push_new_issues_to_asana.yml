@@ -30,6 +30,6 @@ jobs:
                            \"workspace\": \"$ASANA_WORKSPACE\",
                            \"name\": \"[$GITHUB_REPOSITORY] $ISSUE_TITLE\",
                            \"projects\": [ \"$ASANA_PROJECT\" ],
-                           \"notes\": \"$ISSUE_DESCRIPTION\"
+                           \"notes\": \"URL: $ISSUE_URL \n $ISSUE_DESCRIPTION\"
                          }
                       }"
