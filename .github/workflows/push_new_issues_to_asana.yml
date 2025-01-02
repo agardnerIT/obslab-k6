@@ -15,6 +15,7 @@ jobs:
           ASANA_PAT: ${{ secrets.ASANA_PAT }}
           ASANA_WORKSPACE: ${{ secrets.ASANA_WORKSPACE }}
           ASANA_PROJECT: ${{ secrets.ASANA_PROJECT }}
+          ISSUE_TITLE: ${{ event.issue.title }}
         run: |
           curl --request POST \
                --url https://app.asana.com/api/1.0/tasks \
@@ -24,7 +25,7 @@ jobs:
                --data "{
                          \"data\": {
                            \"workspace\": \"$ASANA_WORKSPACE\",
-                           \"name\": \"a title\",
+                           \"name\": \"$ISSUE_TITLE\",
                            \"projects\": [ \"$ASANA_PROJECT\" ],
                            \"notes\": \"a description\"
                          }
