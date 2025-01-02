@@ -38,6 +38,10 @@
 
 ## Set Details for Live Code Snippets
 
+Your browser needs to make an authenticated connection to the codespace. To do so, the browser needs the endpoint and secret key available.
+
+These are stored in the browsers local storage and you will retrieve and set these now.
+
 Retrieve the URL by going to the `Ports` tab in the codespace, click the row corresponding to port `8000` and press `Ctrl + c`.
 Alternatively you can right click and choose `Copy Local address`
 
