@@ -1,4 +1,4 @@
-name: "Push New Issues to Asana"
+wname: "Push New Issues to Asana"
 on:
   issues:
     types: [opened]
@@ -16,6 +16,8 @@ jobs:
           ASANA_WORKSPACE: ${{ secrets.ASANA_WORKSPACE }}
           ASANA_PROJECT: ${{ secrets.ASANA_PROJECT }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_URL: ${{ github.event.issue.html_url }}
+          ISSUE_DESCRIPTION: ${{ github.event.issue.body }}
         run: |
           curl --request POST \
                --url https://app.asana.com/api/1.0/tasks \
@@ -27,6 +29,6 @@ jobs:
                            \"workspace\": \"$ASANA_WORKSPACE\",
                            \"name\": \"$ISSUE_TITLE\",
                            \"projects\": [ \"$ASANA_PROJECT\" ],
-                           \"notes\": \"a description\"
+                           \"notes\": \"$ISSUE_URL\n\n$ISSUE_DESCRIPTION\"
                          }
                       }"
