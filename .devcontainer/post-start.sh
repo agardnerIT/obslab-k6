@@ -16,9 +16,12 @@ python /workspaces/$RepositoryName/set_secret_key.py
 
 # If this is a testing codespace (codespace names starts with testing_)
 # Install testing dependencies
+# and run test harness
 if [[ $CODESPACE_NAME == testing_* ]];
 then
-  pip install -r /workspaces/$RepositoryName/.devcontainer/testing/requirements.txt
+  cd /workspaces/$RepositoryName/.devcontainer/testing
+  pip install -r requirements.txt
+  python app.py
 fi
 
 pip install -r /workspaces/$RepositoryName/requirements.txt
