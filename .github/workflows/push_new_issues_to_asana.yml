@@ -11,17 +11,21 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
       - name: "Open Asana Issue"
+        env:
+          ASANA_PAT: ${{ secrets.ASANA_PAT }}
+          ASANA_WORKSPACE: ${{ secrets.ASANA_WORKSPACE }}
+          ASANA_PROJECT: ${{ secrets.ASANA_PROJECT }}
         run: |
           curl --request POST \
             --url https://app.asana.com/api/1.0/tasks \
             --header "accept: application/json" \
-            --header "authorization: Bearer ${{ secrets.ASANA_PAT }}" \
+            --header "authorization: Bearer $ASANA_PAT" \
             --header 'content-type: application/json' \
             --data "{
                 \"data\": {
-                  \"workspace\": \"${{ secrets.ASANA_WORKSPACE }}\",
+                  \"workspace\": \"$ASANA_WORKSPACE\",
                   \"name\": \"${{ github.event.issue.title }}\",
-                  \"projects\": [ \"${{ secrets.ASANA_PROJECT }}\" ],
+                  \"projects\": [ \"$ASANA_PROJECT\" ],
                   \"notes\": \"${{ github.event.issue.body }}\"
                 }
               }"
