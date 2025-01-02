@@ -17,15 +17,15 @@ jobs:
           ASANA_PROJECT: ${{ secrets.ASANA_PROJECT }}
         run: |
           curl --request POST \
-            --url https://app.asana.com/api/1.0/tasks \
-            --header "accept: application/json" \
-            --header "authorization: Bearer $ASANA_PAT" \
-            --header 'content-type: application/json' \
-            --data "{
-                \"data\": {
-                  \"workspace\": \"$ASANA_WORKSPACE\",
-                  \"name\": \"${{ github.event.issue.title }}\",
-                  \"projects\": [ \"$ASANA_PROJECT\" ],
-                  \"notes\": \"${{ github.event.issue.body }}\"
-                }
-              }"
+               --url https://app.asana.com/api/1.0/tasks \
+               --header "accept: application/json" \
+               --header "authorization: Bearer $ASANA_PAT" \
+               --header 'content-type: application/json' \
+               --data "{
+                         \"data\": {
+                           \"workspace\": \"$ASANA_WORKSPACE\",
+                           \"name\": \"a title\",
+                           \"projects\": [ \"$ASANA_PROJECT\" ],
+                           \"notes\": \"a description\"
+                         }
+                      }"
