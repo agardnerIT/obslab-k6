@@ -6,10 +6,6 @@ jobs:
   Create-Asana-Task-For-Issue:
     runs-on: ubuntu-latest
     steps:
-      - name: View the github context
-        run: echo "$GITHUB_CONTEXT"
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
       - name: "Open Asana Issue"
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
