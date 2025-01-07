@@ -20,14 +20,4 @@ Create an API token with the following permissions:
 - `metrics.ingest`
 - `openpipeline.events_sdlc`
 
-## Start Demo
-
---8<-- "snippets/codespace-details-warning-box.md"
-
-Click this button to launch the demo in a new tab.
-
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/dynatrace/obslab-k6){target=_blank}
-
-<div class="grid cards" markdown>
-- [Click Here to Run the Demo :octicons-arrow-right-24:](run-demo.md)
-</div>
+## [Click Here to Run the Demo >>](run-demo.md)

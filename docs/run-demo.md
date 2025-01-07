@@ -1,29 +1,32 @@
-
 ## Import Dynatrace Dashboard
 
 While you are waiting for the environment, add the dashboard to your Dynatrace environment.
 
-1. Save the [k6 dashboard](https://github.com/dynatrace-perfclinics/obslab-k6/blob/main/dashboards/Grafana%20k6%20Dashboard.json){target=_blank} to your local machine.
-1. In Dynatrace, navigate to `Dashboards` and click `Upload`
-1. Upload the dashboard JSON file
+1. Save the [k6 dashboard](https://github.com/dynatrace-perfclinics/obslab-k6/blob/main/dashboards/Grafana%20k6%20Dashboard.json) to your local machine.
+2. In Dynatrace, navigate to `Dashboards` and click `Upload`
+3. Upload the dashboard JSON file
 
 ## Start k6
 
-In the codespace terminal, type `docker ps` and wait until Docker is running.
+In the codespace terminal, type `docker ps` and wait until Docker is running:
+
+```sh
+docker ps
+```
 
 You should see this:
 
-```
+```cat {"excludeFromRunAll":"true","interactive":"false","promptEnv":"never"}
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ```
 
 Now run k6 with the demo script. Copy and paste this as-is into the terminal window:
 
-```
+```sh
 docker run \
     -e K6_DYNATRACE_URL=$DT_URL \
     -e K6_DYNATRACE_APITOKEN=$DT_K6_TOKEN \
-    --mount type=bind,source=./k6scripts,target=/k6scripts hrexed/xk6-dynatrace-output:0.11 run /k6scripts/script.js \
+    --mount type=bind,source=/workspaces/$RepositoryName/k6scripts,target=/k6scripts hrexed/xk6-dynatrace-output:0.11 run /k6scripts/script.js \
     -o output-dynatrace
 ```
 
@@ -44,7 +47,7 @@ In Dynatrace:
 
 When the load test finished, the [teardown function](https://github.com/Dynatrace/obslab-k6/blob/d2e11127f3a9e7665d67ab2015c7e4a2d7599b96/k6scripts/script.js#L17){target=_blank} sends a Software Delivery Lifecycle Event (SDLC) to Dynatrace.
 
-```
+```js
 // Run load with 2 virtual users for 1 minute
 export const options = {
   vus: 2,
@@ -83,13 +86,11 @@ In Dynatrace:
 * Open an existing notebook or create a new one
 * Add a new `DQL` section and paste the following
 
-```
+```sh
 fetch events
 | filter event.kind == "SDLC_EVENT"
 | filter event.provider == "k6"
 ```
-
-
 
 ![sdlc event](images/sdlc-event.png)
 

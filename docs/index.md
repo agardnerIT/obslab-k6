@@ -38,6 +38,4 @@ such as the test duration.
 | Dynatrace Managed  | ✔️                 |
 | Dynatrace SaaS     | ✔️                 |
 
-<div class="grid cards" markdown>
-- [Click Here to Begin :octicons-arrow-right-24:](getting-started.md)
-</div>
+### [Click Here to Begin >>](getting-started.md)
