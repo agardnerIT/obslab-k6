@@ -61,8 +61,18 @@ def wait_for_app_frame_to_load(page: Page):
 
 def create_new_document(page: Page, app_frame: FrameLocator):
     app_frame.get_by_test_id("new-document-button").click()
+
     expect(app_frame.get_by_label("Add section").first).to_be_visible(timeout=15000)
-    app_frame.get_by_label("Add section").first.wait_for(timeout=15000)
+
+    # If the "getting started" guide pops up, wait for it
+    # Then close it, then proceed
+    try:
+        logger.info("Trying to close the microguide...")
+        app_frame.get_by_label("Close microguide").click()
+    except:
+        logger.info("Microguide didn't show. That's OK. Proceeding.")
+    
+    expect(app_frame.get_by_test_id("add-section-menu-label")).to_be_visible(timeout=15000)
 
 def add_document_section(page, app_frame: FrameLocator, section_type_text):
 
@@ -189,3 +199,10 @@ def test_dynatrace_ui(page: Page):
     add_document_section(page=page, app_frame=app_frame, section_type_text="DQL")
     enter_dql_query(app_frame, dql_query='fetch events\n| filter event.kind == "SDLC_EVENT"\n| filter event.provider == "k6"')
     validate_document_section_has_data(app_frame=app_frame, section_index="1")
+
+    # Delete document
+    # Must click the last item to avoid deleting other notebooks
+    # in hte left hand bar!
+    app_frame.get_by_label("Document actions").last.click()
+    app_frame.get_by_text("Move to trash").last.wait_for()
+    app_frame.get_by_text("Move to trash").last.click()
