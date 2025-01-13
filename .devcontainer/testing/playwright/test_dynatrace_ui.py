@@ -1,8 +1,9 @@
 import re
-from playwright.sync_api import Playwright, Page, expect, Locator, FrameLocator
+from playwright.sync_api import Playwright, Page, expect, FrameLocator, Locator
 import pytest
 import os
 from loguru import logger
+import time
 
 TESTING_DYNATRACE_TENANT_ID = os.environ.get("TESTING_DYNATRACE_TENANT_ID", "")
 TESTING_DYNATRACE_USER_EMAIL = os.environ.get("TESTING_DYNATRACE_USER_EMAIL", "")
@@ -55,42 +56,70 @@ def open_app_from_search_modal(page: Page, app_name: str):
 
 def wait_for_app_frame_to_load(page: Page):
     frame = page.frame_locator('[data-testid="app-iframe"]')
-    expect(frame.get_by_test_id("page-panel-main")).to_be_visible()
+    expect(frame.get_by_test_id("page-panel-main")).to_be_visible(timeout=10000)
     return frame
 
 def create_new_document(page: Page, app_frame: FrameLocator):
     app_frame.get_by_test_id("new-document-button").click()
-    expect(app_frame.get_by_label("Add section").first).to_be_visible()
+    expect(app_frame.get_by_label("Add section").first).to_be_visible(timeout=15000)
+    app_frame.get_by_label("Add section").first.wait_for(timeout=15000)
 
-def add_document_section(app_frame: FrameLocator):
-    add_section_element = app_frame.get_by_label("Add section").first
-    add_section_element.wait_for(timeout=10000)
-    add_section_element.click()
-    expect(app_frame.get_by_text("Create new section")).to_be_visible()
+def add_document_section(page, app_frame: FrameLocator, section_type_text):
 
-def validate_document_section_has_data(app_frame: FrameLocator, search_term: str):
-    # Validate the search results have multiple results
-    #search_result_list = page.get_by_test_id("virtualized-list")
-    parent_element = app_frame.get_by_test_id("virtualized-list")
-    parent_element.wait_for()
-    span_locators = parent_element.locator("span")
-    spans = span_locators.all()
+    # Wait for stuff to load
+    expect(app_frame.get_by_label("Add section").first.or_(app_frame.get_by_label("Add section at the start of the notebook")).first).to_be_visible(timeout=15000)
 
-    if len(spans) < 1:
-        pytest.fail(f"No search results for {search_term} found")
+    #add_section_element = app_frame.get_by_label("Add section").first
+    #add_section_element.wait_for(timeout=10000)
+    #add_section_element.click()
+    # Annoyingly an empty document "Add section +" button is "add-section-menu-label"
+    # But a document with an existing section has two buttons:
+    # - "Add section at the start of the notebook"
+    # - "Add section at the end of the notebook"
+    # Key combinations like Shift+D automatically
+    # add new sections to the end of the document
+    # We should always check .last for data
+    # Special treatment for section types with key combo shortcuts:
+    # DQL: Shift+D
+    # Code: Shift+C
+    # Markdown: Shift+M
+    if section_type_text == "DQL":
+        logger.info("Using key combination Shift+D for DQL tile")
+        page.keyboard.press("Shift+D")
+    elif section_type_text == "Code":
+        logger.info("Using key combination Shift+C for Code tile")
+        page.keyboard.press("Shift+C")
+    elif section_type_text == "Markdown":
+        logger.info("Using key combination Shift+M for Markdown tile")
+        page.keyboard.press("Shift+M")
+    else:
+        page.keyboard.press("ControlOrMeta+Shift+Enter")
+        expect(app_frame.get_by_text("Create new section")).to_be_visible(timeout=10000)
+        logger.info(f"Clicking {section_type_text}")
+        app_frame.get_by_text(section_type_text, exact=False).first.click(timeout=10000)
 
-    first_search_result = spans[0]
-    if search_term not in first_search_result.inner_html().lower():
-        pytest.fail(f"Got a search result but first item in list did not contain {search_term}")
+def enter_dql_query(app_frame, dql_query):
+    app_frame.get_by_label("Enter a DQL query").type(dql_query)
+
+def validate_document_section_has_data(app_frame: FrameLocator, section_index):
     
-    # Click the first search result
-    first_search_result.click()
+    section = app_frame.locator(f"[data-testid-section-index=\"{section_index}\"]")
 
     # Click the Run button
-    app_frame.get_by_test_id("run-query-button").click()
+    section.get_by_test_id("run-query-button").click()
 
     # wait for DQL to finish
-    app_frame.get_by_test_id("result-container").wait_for()
+    # if this times out, either query took too long
+    # of the query was invalid
+    try:
+        section.get_by_test_id("result-container").wait_for(timeout=30000)
+    except:
+        pytest.fail("Either query timed out or an invalid query was provided.")
+
+
+    # If we get here
+    # query executed and now let's
+    # see if there valid data returned
 
     # Try to find the "no data" <h6>
     # Remember, NOT finding this is actually a good thing
@@ -99,16 +128,28 @@ def validate_document_section_has_data(app_frame: FrameLocator, search_term: str
     # If the chart graphic does not appear
     # Then the data is not available in Dynatrace
     # and we should error and exit.
-    if no_data_heading.is_visible() and no_data_heading.inner_html(timeout=1000) == "There are no records":
-        pytest.fail("No data found!")
+    if no_data_heading.is_visible(timeout=5000) and no_data_heading.inner_html(timeout=5000) == "There are no records":
+        pytest.fail(f"No data found in section_index={section_index}")
+    else:
+        logger.debug(f"[DEBUG] Data found in section_index={section_index}")
 
+# Specific function to add a metric to a metric type chart
+# Note: This does NOT click the "Run query" button
+# For data validation, use the valudate_document_section_has_data function
+def add_metric(app_frame, search_term, metric_text):
+    app_frame.get_by_label("Select metric").first.click()
+    logger.info(f"Selecting {search_term} from list")    
+    # logger.info("Clicking `Select metric` button")
+    # app_frame.get_by_label("Select metric").first.click()
+    logger.info(f"Typing `{search_term}` into the box")
+    app_frame.get_by_test_id("text-input").fill(search_term)
+    # Add the metric to the metric chart
+    app_frame.get_by_label(metric_text).last.click()
+    
 @pytest.mark.timeout(TEST_TIMEOUT_SECONDS)
 def test_dynatrace_ui(page: Page):
 
     app_name = "notebooks"
-
-    ################################################
-    logger.info("STARTING TEST")
 
     ################################################
     logger.info("Logging in")
@@ -136,20 +177,15 @@ def test_dynatrace_ui(page: Page):
     create_new_document(page, app_frame)
     
     ################################################
+    search_term = "k6"
+    metric_text = "k6.vus"
     logger.info(f"Adding a new {app_name} section")
-    add_document_section(app_frame)
+    add_document_section(page=page, app_frame=app_frame, section_type_text="Metrics")
+    add_metric(app_frame=app_frame, search_term=search_term, metric_text=metric_text)
 
     ################################################
-    search_term = "cpu"
-    logger.info(f"Selecting {search_term} from list")
-    
-    logger.info("Clicking `Metrics`")
-    app_frame.get_by_text("Metrics", exact=True).click()
-    logger.info("Clicking `Select metric` button")
-    app_frame.get_by_label("Metric key").first.click()
-    logger.info(f"Typing `{search_term}` into the box")
-    app_frame.get_by_test_id("text-input").fill(search_term)
+    validate_document_section_has_data(app_frame=app_frame, section_index="0")
 
-    
-    ################################################
-    validate_document_section_has_data(app_frame, search_term)
+    add_document_section(page=page, app_frame=app_frame, section_type_text="DQL")
+    enter_dql_query(app_frame, dql_query='fetch events\n| filter event.kind == "SDLC_EVENT"\n| filter event.provider == "k6"')
+    validate_document_section_has_data(app_frame=app_frame, section_index="1")
