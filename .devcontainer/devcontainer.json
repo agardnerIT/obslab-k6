@@ -2,7 +2,11 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/kubernetes-helm
 {
 	"name": "k6 + Dynatrace Demo Environment",
-
+	"image": "mcr.microsoft.com/devcontainers/python:dev-3.9-bookworm",
+    // "features": {
+	// 	"ghcr.io/devcontainers/features/github-cli:1": {
+	// 	},
+	// },  
 	"hostRequirements": {
 		"cpus": 2
 	},
@@ -20,7 +24,11 @@
             "onAutoForward": "silent"
         }
     },
-
+    "remoteEnv": {
+		"PODMAN_USERNS": "keep-id"
+	  },
+	"containerUser": "vscode",
+  
 	// Add recommended secrets
 	"secrets": {
 	 	  "DT_URL": {
