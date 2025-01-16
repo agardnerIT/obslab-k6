@@ -17,13 +17,17 @@ You should see this:
 CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 ```
 
+``` {"name": "docker ps"}
+docker ps
+```
+
 Now run k6 with the demo script. Copy and paste this as-is into the terminal window:
 
-```
+``` {"name": "docker run k6"}
 docker run \
     -e K6_DYNATRACE_URL=$DT_URL \
     -e K6_DYNATRACE_APITOKEN=$DT_K6_TOKEN \
-    --mount type=bind,source=./k6scripts,target=/k6scripts hrexed/xk6-dynatrace-output:0.11 run /k6scripts/script.js \
+    --mount type=bind,source=/workspaces/$RepositoryName/k6scripts,target=/k6scripts hrexed/xk6-dynatrace-output:0.11 run /k6scripts/script.js \
     -o output-dynatrace
 ```
 
@@ -83,7 +87,7 @@ In Dynatrace:
 * Open an existing notebook or create a new one
 * Add a new `DQL` section and paste the following
 
-```
+``` { "name": "fetch events dql" }
 fetch events
 | filter event.kind == "SDLC_EVENT"
 | filter event.provider == "k6"
