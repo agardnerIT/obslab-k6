@@ -33,7 +33,7 @@ then
 
   # Testing finished
   # Destroy the codespace
-  gh codespace delete --codespace $CODESPACE_NAME --force
+  #gh codespace delete --codespace $CODESPACE_NAME --force
 fi
 
 # Startup Ping
