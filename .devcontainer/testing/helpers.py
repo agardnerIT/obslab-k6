@@ -213,3 +213,35 @@ def delete_document(page):
     app_frame_locator.get_by_label("Document actions").last.click(timeout=WAIT_TIMEOUT)
     app_frame_locator.get_by_text("Move to trash").last.wait_for(timeout=WAIT_TIMEOUT)
     app_frame_locator.get_by_text("Move to trash").last.click(timeout=WAIT_TIMEOUT)
+
+# This function takes a snippet name
+# and retrieves the DQL using runme
+# eg. { "name": "fetch events dql"}
+def retrieve_dql_query(snippet_name):
+    output = subprocess.run(["runme", "print", snippet_name], capture_output=True, text=True)
+    # Spit the output and keep the newline characters
+    lines = output.stdout.splitlines(keepends=True)
+    
+    snippet = ""
+    current_position = 0
+    for line in lines:
+        # First line is always
+        # ``` {"name": "****"}
+        # So ignore it always
+        if current_position == 0:
+            current_position += 1
+            continue
+
+        # If the line starts with backticks
+        # We know it's the final useful line
+        # So immediately exit
+        if line.startswith("```"):
+            break
+
+        # If here
+        # Every other line is useful
+        # So append to the snippet
+        # Increment position counter to ensure we get all lines
+        snippet += line
+        current_position += 1
+    return snippet
