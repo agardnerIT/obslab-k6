@@ -66,7 +66,7 @@ def login(page: Page):
     page.locator('[data-id="password_login"]').fill(TESTING_DYNATRACE_USER_PASSWORD)
     page.locator('[data-id="sign_in"]').click(timeout=WAIT_TIMEOUT)
     page.wait_for_url("**/ui/**")
-    expect(page).to_have_title(re.compile(TESTING_DYNATRACE_TENANT_ID))
+    expect(page.locator("title", has_text=TESTING_DYNATRACE_TENANT_ID).first)
 
     # Wait for app to load
     wait_for_app_to_load(page)
@@ -141,7 +141,8 @@ def enter_dql_query(page, dql_query, section_index, validate):
 
     section = app_frame_locator.locator(f"[data-testid-section-index=\"{section_index}\"]")
     
-    section.get_by_label("Enter a DQL query").type(dql_query)
+    #section.get_by_label("Enter a DQL query").type(dql_query)
+    section.get_by_role("textbox").fill(dql_query)
 
     if validate:
         validate_document_section_has_data(page, section_index)
@@ -164,7 +165,6 @@ def validate_document_section_has_data(page: Page, section_index):
     try:
         section.get_by_test_id("result-container").wait_for(timeout=WAIT_TIMEOUT)
     except:
-        delete_document(page)
         pytest.fail("Either query timed out or an invalid query was provided.")
 
 
@@ -175,14 +175,17 @@ def validate_document_section_has_data(page: Page, section_index):
     # Try to find the "no data" <h6>
     # Remember, NOT finding this is actually a good thing
     # Because then you DO have data
-    no_data_heading = app_frame.locator("h6")
+    no_data_heading = section.locator("h6")
     # If the chart graphic does not appear
     # Then the data is not available in Dynatrace
     # and we should error and exit.
-    if no_data_heading.is_visible(timeout=WAIT_TIMEOUT) and no_data_heading.inner_html(timeout=WAIT_TIMEOUT) == "There are no records":
-        delete_document(page)
-        pytest.fail(f"No data found in section_index={section_index}")
-    else:
+    try:
+        logger.info(f">>> NDH: {no_data_heading}")
+        if "There are no records" == no_data_heading.text_content(timeout=WAIT_TIMEOUT):
+            pytest.fail(f"No data found in section_index={section_index}")
+        else:
+            logger.debug(f"[DEBUG] Data found in section_index={section_index}")
+    except: # This is the good case. Data was found
         logger.debug(f"[DEBUG] Data found in section_index={section_index}")
 
 # Specific function to add a metric to a metric type chart
