@@ -179,14 +179,10 @@ def validate_document_section_has_data(page: Page, section_index):
     # If the chart graphic does not appear
     # Then the data is not available in Dynatrace
     # and we should error and exit.
-    try:
-        logger.info(f">>> NDH: {no_data_heading}")
-        if "There are no records" == no_data_heading.text_content(timeout=WAIT_TIMEOUT):
-            pytest.fail(f"No data found in section_index={section_index}")
-        else:
-            logger.debug(f"[DEBUG] Data found in section_index={section_index}")
-    except: # This is the good case. Data was found
-        logger.debug(f"[DEBUG] Data found in section_index={section_index}")
+    if no_data_heading.is_visible():
+        pytest.fail(f"No data found in section_index={section_index}")
+    else:
+        logger.debug(f"[DEBUG] 1 Data found in section_index={section_index}")
 
 # Specific function to add a metric to a metric type chart
 # Note: This does NOT click the "Run query" button
