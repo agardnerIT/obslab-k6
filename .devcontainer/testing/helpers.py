@@ -66,7 +66,7 @@ def login(page: Page):
     page.locator('[data-id="password_login"]').fill(TESTING_DYNATRACE_USER_PASSWORD)
     page.locator('[data-id="sign_in"]').click(timeout=WAIT_TIMEOUT)
     page.wait_for_url("**/ui/**")
-    expect(page).to_have_title(re.compile(TESTING_DYNATRACE_TENANT_ID))
+    expect(page.locator("title", has_text=TESTING_DYNATRACE_TENANT_ID).first)
 
     # Wait for app to load
     wait_for_app_to_load(page)
