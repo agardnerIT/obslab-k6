@@ -164,7 +164,7 @@ def validate_document_section_has_data(page: Page, section_index):
     try:
         section.get_by_test_id("result-container").wait_for(timeout=WAIT_TIMEOUT)
     except:
-        delete_document(app_frame)
+        delete_document(page)
         pytest.fail("Either query timed out or an invalid query was provided.")
 
 
@@ -180,7 +180,7 @@ def validate_document_section_has_data(page: Page, section_index):
     # Then the data is not available in Dynatrace
     # and we should error and exit.
     if no_data_heading.is_visible(timeout=WAIT_TIMEOUT) and no_data_heading.inner_html(timeout=WAIT_TIMEOUT) == "There are no records":
-        delete_document(app_frame)
+        delete_document(page)
         pytest.fail(f"No data found in section_index={section_index}")
     else:
         logger.debug(f"[DEBUG] Data found in section_index={section_index}")
