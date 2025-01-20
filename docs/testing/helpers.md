@@ -42,3 +42,7 @@ if STRING_FOUND:
 else:
     print(f"String still not found after: {CURRENT_TIME}s")
 ```
+
+```sh { "name": "sleep 30" }
+sleep 30
+```
