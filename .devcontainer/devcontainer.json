@@ -10,9 +10,6 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": ".devcontainer/post-create.sh",
 
-	// Use 'postStartCommand' to run commands after the container starts.
-    "postStartCommand": ".devcontainer/post-start.sh",
-
 	// Add recommended secrets
 	"secrets": {
 	 	  "DT_URL": {
