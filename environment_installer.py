@@ -7,11 +7,11 @@ GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY", "")
 
 # Install RunMe
 RUNME_CLI_VERSION = "3.10.2"
-run_command(["mkdir", "runme"])
-run_command(["wget", "-O", "runme/runme_linux_x86_64.tar.gz", f"https://download.stateful.com/runme/{RUNME_CLI_VERSION}/runme_linux_x86_64.tar.gz"])
-run_command(["tar", "-xvf", "runme/runme_linux_x86_64.tar.gz"])
-run_command(["sudo", "mv", "runme/runme /usr/local/bin"])
-run_command(["rm", "-rf", "runme"])
+run_command(["mkdir", "runme_binary"])
+run_command(["wget", "-O", "runme_binary/runme_linux_x86_64.tar.gz", f"https://download.stateful.com/runme/{RUNME_CLI_VERSION}/runme_linux_x86_64.tar.gz"])
+run_command(["tar", "-xvf", "runme_binary/runme_linux_x86_64.tar.gz", "--directory", "runme_binary"])
+run_command(["sudo", "mv", "runme_binary/runme", "/usr/local/bin"])
+run_command(["rm", "-rf", "runme_binary"])
 
 # Build DT environment URLs
 DT_TENANT_APPS, DT_TENANT_LIVE = build_dt_urls(dt_env_id=DT_ENVIRONMENT_ID, dt_env_type=DT_ENVIRONMENT_TYPE)
