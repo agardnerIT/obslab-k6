@@ -4,16 +4,18 @@ from loguru import logger
 import pytest
 
 WAIT_TIMEOUT = 10000
-DT_ENVIRONMENT_ID = os.environ.get("DT_ENVIRONMENT_ID", "")
-
 SECTION_TYPE_METRICS = "Metrics"
 SECTION_TYPE_DQL = "DQL"
 SECTION_TYPE_CODE = "Code"
 SECTION_TYPE_MARKDOWN = "Markdown"
 
+DT_ENVIRONMENT_ID = os.environ.get("DT_ENVIRONMENT_ID", "")
+DT_ENVIRONMENT_TYPE = os.environ.get("DT_ENVIRONMENT_TYPE", "live")
+DT_API_TOKEN = os.environ.get("DT_API_TOKEN", "")
 TESTING_DYNATRACE_USER_EMAIL = os.environ.get("TESTING_DYNATRACE_USER_EMAIL", "")
 TESTING_DYNATRACE_USER_PASSWORD = os.environ.get("TESTING_DYNATRACE_USER_PASSWORD", "")
 REPOSITORY_NAME = os.environ.get("RepositoryName", "")
+TESTING_BASE_DIR = f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing"
 
 DEV_MODE = os.environ.get("DEV_MODE", "FALSE").upper() # This is a string. NOT a bool.
 
@@ -28,15 +30,23 @@ def get_steps(filename):
     
     return steps_clean
 
-# TODO: This assumes env is running on GitHub Codespaces
-# Improve this
+# TODO: This assumes env is running on GitHub Codespaces. Improve this
 def create_github_issue(output, step_name):
     subprocess.run(["gh", "issue", "create", "--label", "e2e test failed", "--title", f"Failed on step: {step_name}", "--body", f"The end to end test script failed on step: {step_name}\n\n## Output\n```\n{output.stdout}\n```\n\n## stderr \n```\n{output.stderr}\n```"])
     exit(0)
 
-if DT_ENVIRONMENT_ID == "" or TESTING_DYNATRACE_USER_EMAIL == "" or TESTING_DYNATRACE_USER_PASSWORD == "":
-    print("MISSING MANDATORY ENV VARS. EXITING.")
-    exit()
+if (
+      DT_ENVIRONMENT_ID == "" or
+      DT_ENVIRONMENT_TYPE == "" or
+      DT_API_TOKEN == "" or
+      TESTING_DYNATRACE_USER_EMAIL == "" or
+      TESTING_DYNATRACE_USER_PASSWORD == ""
+   ):
+       print("MISSING MANDATORY ENV VARS. EXITING.")
+       print(f"DT_ENVIRONMENT_ID: {DT_ENVIRONMENT_ID}")
+       print(f"TESTING_DYNATRACE_USER_EMAIL: {TESTING_DYNATRACE_USER_EMAIL}")
+       print(f"TESTING_DYNATRACE_USER_PASSWORD: {TESTING_DYNATRACE_USER_PASSWORD}")
+       exit()
 
 def login(page: Page):
     page.goto("https://sso.dynatrace.com")
