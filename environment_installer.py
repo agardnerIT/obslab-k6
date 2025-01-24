@@ -4,6 +4,7 @@ import dotenv
 
 CODESPACE_NAME = os.environ.get("CODESPACE_NAME", "")
 GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY", "")
+REPOSITORY_NAME = os.environ.get("RepositoryName", "")
 
 # Install RunMe
 RUNME_CLI_VERSION = "3.10.2"
@@ -34,11 +35,10 @@ if CODESPACE_NAME.startswith("dttest-"):
     # We can do this as we know we have permission to this repo
     # (because we're the owner and testing it)
     run_command(["gh", "label", "create", "e2e test failed", "--force"])
-    run_command(["pip", "install", "-r", "requirements.txt"])
-    run_command(["python", "testharness.py"])
+    run_command(["pip", "install", "-r", f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing/requirements.txt", "--break-system-packages"])
+    run_command(["python",  f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing/testharness.py"])
 
-    # Testing finished
-    # Destroy the codespace
+    # Testing finished. Destroy the codespace
     run_command(["gh", "codespace", "delete", "--codespace", CODESPACE_NAME, "--force"])
-#else:
-#    send_startup_ping(demo_name="obslab-k6")
+else:
+    send_startup_ping(demo_name="obslab-k6")
