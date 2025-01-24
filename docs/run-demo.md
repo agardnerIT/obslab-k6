@@ -24,9 +24,11 @@ docker ps
 Now run k6 with the demo script. Copy and paste this as-is into the terminal window:
 
 ``` {"name": "docker run k6"}
+source /workspaces/$RepositoryName/.env
+
 docker run \
     -e K6_DYNATRACE_URL=$DT_URL \
-    -e K6_DYNATRACE_APITOKEN=$DT_K6_TOKEN \
+    -e K6_DYNATRACE_APITOKEN=$DT_API_TOKEN \
     --mount type=bind,source=/workspaces/$RepositoryName/k6scripts,target=/k6scripts hrexed/xk6-dynatrace-output:0.11 run /k6scripts/script.js \
     -o output-dynatrace
 ```
@@ -93,8 +95,6 @@ fetch events
 | filter event.provider == "k6"
 ```
 
-
-
 ![sdlc event](images/sdlc-event.png)
 
 User exercise: Modify the JSON body to also send the number of Virtual Users (VUs) used to Dynatrace. Re-run the load test to see the new event.
@@ -113,3 +113,4 @@ The demo is complete.
 
 <div class="grid cards" markdown>
 - [Click Here to Delete and Cleanup resources :octicons-arrow-right-24:](cleanup.md)
+</div>

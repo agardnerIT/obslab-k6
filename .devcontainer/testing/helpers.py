@@ -2,39 +2,20 @@ import os, re, subprocess
 from playwright.sync_api import Page, expect, FrameLocator
 from loguru import logger
 import pytest
-import time
-
-# TODO: You must set this variable
-# This is the Key of the Dynatrace URL used in devcontainer.json
-DT_URL_PARAMETER_NAME = "DT_URL"
-
-# DO NOT ADJUST ANYTHING BELOW THIS LINE
 
 WAIT_TIMEOUT = 10000
-
-# This function extracts the tenant ID
-# eg. `abc12345` from `https://abc12345.live.dynatrace.com`
-def extract_tenant_from_dt_url(env_var_name):
-    TENANT_URL = os.environ.get(env_var_name, "")
-    if TENANT_URL == "":
-        return TENANT_URL
-    if len(TENANT_URL) == 8: # abc12345
-        return TENANT_URL
-    if "https://" not in TENANT_URL:
-        return TENANT_URL
-    TENANT_ID_PIECES = TENANT_URL.split(".")
-    TENANT_ID = TENANT_ID_PIECES[0].split("https://")[1]
-    return TENANT_ID
-
 SECTION_TYPE_METRICS = "Metrics"
 SECTION_TYPE_DQL = "DQL"
 SECTION_TYPE_CODE = "Code"
 SECTION_TYPE_MARKDOWN = "Markdown"
 
-TESTING_DYNATRACE_TENANT_ID = extract_tenant_from_dt_url(DT_URL_PARAMETER_NAME)
+DT_ENVIRONMENT_ID = os.environ.get("DT_ENVIRONMENT_ID", "")
+DT_ENVIRONMENT_TYPE = os.environ.get("DT_ENVIRONMENT_TYPE", "live")
+DT_API_TOKEN = os.environ.get("DT_API_TOKEN", "")
 TESTING_DYNATRACE_USER_EMAIL = os.environ.get("TESTING_DYNATRACE_USER_EMAIL", "")
 TESTING_DYNATRACE_USER_PASSWORD = os.environ.get("TESTING_DYNATRACE_USER_PASSWORD", "")
 REPOSITORY_NAME = os.environ.get("RepositoryName", "")
+TESTING_BASE_DIR = f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing"
 
 DEV_MODE = os.environ.get("DEV_MODE", "FALSE").upper() # This is a string. NOT a bool.
 
@@ -49,15 +30,23 @@ def get_steps(filename):
     
     return steps_clean
 
-# TODO: This assumes env is running on GitHub Codespaces
-# Improve this
+# TODO: This assumes env is running on GitHub Codespaces. Improve this
 def create_github_issue(output, step_name):
     subprocess.run(["gh", "issue", "create", "--label", "e2e test failed", "--title", f"Failed on step: {step_name}", "--body", f"The end to end test script failed on step: {step_name}\n\n## Output\n```\n{output.stdout}\n```\n\n## stderr \n```\n{output.stderr}\n```"])
     exit(0)
 
-if TESTING_DYNATRACE_TENANT_ID == "" or TESTING_DYNATRACE_USER_EMAIL == "" or TESTING_DYNATRACE_USER_PASSWORD == "":
-    print("MISSING MANDATORY ENV VARS. EXITING.")
-    exit()
+if (
+      DT_ENVIRONMENT_ID == "" or
+      DT_ENVIRONMENT_TYPE == "" or
+      DT_API_TOKEN == "" or
+      TESTING_DYNATRACE_USER_EMAIL == "" or
+      TESTING_DYNATRACE_USER_PASSWORD == ""
+   ):
+       print("MISSING MANDATORY ENV VARS. EXITING.")
+       print(f"DT_ENVIRONMENT_ID: {DT_ENVIRONMENT_ID}")
+       print(f"TESTING_DYNATRACE_USER_EMAIL: {TESTING_DYNATRACE_USER_EMAIL}")
+       print(f"TESTING_DYNATRACE_USER_PASSWORD: {TESTING_DYNATRACE_USER_PASSWORD}")
+       exit()
 
 def login(page: Page):
     page.goto("https://sso.dynatrace.com")
@@ -66,7 +55,11 @@ def login(page: Page):
     page.locator('[data-id="password_login"]').fill(TESTING_DYNATRACE_USER_PASSWORD)
     page.locator('[data-id="sign_in"]').click(timeout=WAIT_TIMEOUT)
     page.wait_for_url("**/ui/**")
+<<<<<<< HEAD
     expect(page.locator("title", has_text=TESTING_DYNATRACE_TENANT_ID).first)
+=======
+    expect(page.locator("title", has_text=DT_ENVIRONMENT_ID).first)
+>>>>>>> da8546be7f8b7db075435959782be706401e1780
 
     # Wait for app to load
     wait_for_app_to_load(page)
@@ -141,7 +134,8 @@ def enter_dql_query(page, dql_query, section_index, validate):
 
     section = app_frame_locator.locator(f"[data-testid-section-index=\"{section_index}\"]")
     
-    section.get_by_label("Enter a DQL query").type(dql_query)
+    #section.get_by_label("Enter a DQL query").type(dql_query)
+    section.get_by_role("textbox").fill(dql_query)
 
     if validate:
         validate_document_section_has_data(page, section_index)
@@ -164,7 +158,6 @@ def validate_document_section_has_data(page: Page, section_index):
     try:
         section.get_by_test_id("result-container").wait_for(timeout=WAIT_TIMEOUT)
     except:
-        delete_document(app_frame)
         pytest.fail("Either query timed out or an invalid query was provided.")
 
 
@@ -175,15 +168,14 @@ def validate_document_section_has_data(page: Page, section_index):
     # Try to find the "no data" <h6>
     # Remember, NOT finding this is actually a good thing
     # Because then you DO have data
-    no_data_heading = app_frame.locator("h6")
+    no_data_heading = section.locator("h6")
     # If the chart graphic does not appear
     # Then the data is not available in Dynatrace
     # and we should error and exit.
-    if no_data_heading.is_visible(timeout=WAIT_TIMEOUT) and no_data_heading.inner_html(timeout=WAIT_TIMEOUT) == "There are no records":
-        delete_document(app_frame)
+    if no_data_heading.is_visible():
         pytest.fail(f"No data found in section_index={section_index}")
     else:
-        logger.debug(f"[DEBUG] Data found in section_index={section_index}")
+        logger.debug(f"[DEBUG] 1 Data found in section_index={section_index}")
 
 # Specific function to add a metric to a metric type chart
 # Note: This does NOT click the "Run query" button
