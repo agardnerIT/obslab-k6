@@ -1,3 +1,4 @@
+--8<-- "snippets/live-code-snippets.md"
 --8<-- "snippets/tenant-id.md"
 
 ## Gather Details: Create API Token
