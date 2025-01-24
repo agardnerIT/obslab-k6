@@ -2,7 +2,7 @@ import subprocess
 import os
 from helpers import *
 
-steps = get_steps("steps.txt")
+steps = get_steps(f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing/steps.txt")
 INSTALL_PLAYWRIGHT_BROWSERS = False
 
 # Installing Browsers for Playwright is a time consuming task
@@ -27,9 +27,9 @@ for step in steps:
     if "test_" in step:
         print(f"[{step}] This step is a Playwright test.")
         if DEV_MODE == "FALSE": # Standard mode. Run test headlessly
-            output = subprocess.run(["pytest", f"./{step}"], capture_output=True, text=True)
+            output = subprocess.run(["pytest", "--capture=no", f"{TESTING_BASE_DIR}/{step}"], capture_output=True, text=True)
         else: # Interactive mode (when a maintainer is improving testing. Spin up the browser visually.
-            output = subprocess.run(["pytest", "--capture=no", "--headed", f"./{step}"], capture_output=True, text=True)
+            output = subprocess.run(["pytest", "--capture=no", "--headed", f"{TESTING_BASE_DIR}/{step}"], capture_output=True, text=True)
 
         if output.returncode != 0 and DEV_MODE == "FALSE":
             logger.error(f"Must create an issue: {step} {output}")
