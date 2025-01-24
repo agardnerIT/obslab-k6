@@ -131,39 +131,6 @@ def hash_string(input_str, charset="UTF-8", algorithm="SHA256"):
     hash_factory.update(input_str.encode(charset))
     return hash_factory.hexdigest()
 
-def add_helm_repo(name="", url="", update=False):
-    if name == "" or url == "": return
-
-    logger.info("Got here #1")
-    run_command()
-
-    subprocess.run(["helm", "repo", "add", name, url], capture_output=True, text=True)
-    logger.info("Got here #2")
-    if update:
-        logger.info("Got here #3")
-        subprocess.run(["helm", "repo", "update"], capture_output=True, text=True)
-        logger.info("Got here #4")
-
-def helm_update():
-    output = subprocess.run(["helm", "repo", "update"], capture_output=True, text=True)
-    return output
-
-def helm_install(name="", chart="", values_file="", version=""):
-    if name == "" or chart == "": return
-
-    run_command()
-    
-    command_to_run = f"helm", "install {name} {chart}"
-    if values_file != "":
-        command_to_run += f"--values {values_file}"
-    if version != "":
-        command_to_run += f"--version {version}"
-
-    output = subprocess.run(command_to_run, capture_output=True, text=True)
-    return output
-
-
-
 ##############################
 # DT FUNCTIONS
 
