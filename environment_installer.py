@@ -39,6 +39,6 @@ if CODESPACE_NAME.startswith("dttest-"):
     run_command(["python",  f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing/testharness.py"])
 
     # Testing finished. Destroy the codespace
-    run_command(["gh", "codespace", "delete", "--codespace", CODESPACE_NAME, "--force"])
+    #run_command(["gh", "codespace", "delete", "--codespace", CODESPACE_NAME, "--force"])
 else:
     send_startup_ping(demo_name="obslab-k6")

@@ -1,7 +1,9 @@
-import os, re, subprocess
+import os, re, subprocess, getpass
 from playwright.sync_api import Page, expect, FrameLocator
 from loguru import logger
 import pytest
+import datetime
+import requests
 
 WAIT_TIMEOUT = 10000
 SECTION_TYPE_METRICS = "Metrics"
@@ -55,11 +57,7 @@ def login(page: Page):
     page.locator('[data-id="password_login"]').fill(TESTING_DYNATRACE_USER_PASSWORD)
     page.locator('[data-id="sign_in"]').click(timeout=WAIT_TIMEOUT)
     page.wait_for_url("**/ui/**")
-<<<<<<< HEAD
-    expect(page.locator("title", has_text=TESTING_DYNATRACE_TENANT_ID).first)
-=======
     expect(page.locator("title", has_text=DT_ENVIRONMENT_ID).first)
->>>>>>> da8546be7f8b7db075435959782be706401e1780
 
     # Wait for app to load
     wait_for_app_to_load(page)
@@ -237,3 +235,82 @@ def retrieve_dql_query(snippet_name):
         snippet += line
         current_position += 1
     return snippet
+
+def build_dt_urls(dt_env_id, dt_env_type="live"):
+    if dt_env_type.lower() == "live":
+        dt_tenant_apps = f"https://{dt_env_id}.apps.dynatrace.com"
+        dt_tenant_live = f"https://{dt_env_id}.live.dynatrace.com"
+    else:
+      dt_tenant_apps = f"https://{dt_env_id}.{dt_env_type}.apps.dynatrace.com"
+      dt_tenant_live = f"https://{dt_env_id}.{dt_env_type}.dynatrace.com"
+
+    # if environment is "dev" or "sprint"
+    # ".dynatracelabs.com" not ".dynatrace.com"
+    if dt_env_type.lower() == "dev" or dt_env_type.lower() == "sprint":
+        dt_tenant_apps = dt_tenant_apps.replace(".dynatrace.com", ".dynatracelabs.com")
+        dt_tenant_live = dt_tenant_live.replace(".dynatrace.com", ".dynatracelabs.com")
+    
+    return dt_tenant_apps, dt_tenant_live
+
+def create_dt_api_token(token_name, scopes, dt_rw_api_token, dt_tenant_live):
+
+    # Automatically expire tokens 1 hour in future.
+    time_future = datetime.datetime.now() + datetime.timedelta(hours=1)
+    expiry_date = time_future.strftime("%Y-%m-%dT%H:%M:%S.999Z")
+
+    headers = {
+        "accept": "application/json; charset=utf-8",
+        "content-type": "application/json; charset=utf-8",
+        "authorization": f"api-token {dt_rw_api_token}"
+    }
+
+    payload = {
+        "name": token_name,
+        "scopes": scopes,
+        "expirationDate": expiry_date
+    }
+
+    resp = requests.post(
+        url=f"{dt_tenant_live}/api/v2/apiTokens",
+        headers=headers,
+        json=payload
+    )
+
+    if resp.status_code != 201:
+        exit(f"Cannot create DT API token: {token_name}. Response was: {resp.status_code}. {resp.text}. Exiting.")
+
+    return resp.json()['token']
+
+# Set a system-wide environment variable
+# Defaults to bash shell but can be overriden
+def store_env_var(key, value, env_filepath=f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing/.env"):
+    with open(file=env_filepath, mode="a+") as env_file:
+        env_file.write(f"{key}={value}")
+
+def set_env_var(key, value, env_filename=".bashrc"):
+    current_user = getpass.getuser()
+
+    # Open the /etc/environment file in append mode
+    env_var_file = f"/home/{current_user}/{env_filename}"
+    with open(env_var_file, "a") as file:
+        file.write(f"\nexport {key}={value}")
+
+    # Reload the environment variables
+    os.system(f". {env_var_file}")
+
+    # Source the file and capture the environment variables
+    command = f". {env_var_file} && env"
+    proc = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, executable='/bin/bash')
+    output, _ = proc.communicate()
+
+    # Update the current environment with the variables from the file
+    for line in output.decode().splitlines():
+        k, _, v = line.partition("=")
+        if k == "DT_API_TOKEN":
+            logger.info(f"Setting {k}={v}")
+        os.environ[key] = value
+    
+    # Verify the environment variable is set
+    logger.info(f"New Value set to: {os.environ.get('DT_API_TOKEN')}")
+
+    # Now the environment variables should be updated in the current Python process

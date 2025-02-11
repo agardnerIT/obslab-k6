@@ -22,7 +22,7 @@ GEOLOCATION_LIVE = "GEOLOCATION-45AB48D9D6925ECC"
 SSO_TOKEN_URL_DEV = "https://sso-dev.dynatracelabs.com/sso/oauth2/token"
 SSO_TOKEN_URL_SPRINT = "https://sso-sprint.dynatracelabs.com/sso/oauth2/token"
 SSO_TOKEN_URL_LIVE = "https://sso.dynatrace.com/sso/oauth2/token"
-DT_API_TOKEN = os.environ.get("DT_API_TOKEN") # token to create all other tokens
+DT_API_TOKEN = os.environ.get("DT_API_TOKEN")
 DT_ENVIRONMENT_ID = os.environ.get("DT_ENVIRONMENT_ID") # abc12345
 DT_ENVIRONMENT_TYPE = os.environ.get("DT_ENVIRONMENT_TYPE", "live") # dev, sprint" or "live"
 
