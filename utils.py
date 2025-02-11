@@ -8,6 +8,9 @@ import json
 import hashlib
 from loguru import logger
 
+REPOSITORY_NAME = os.environ.get("RepositoryName", "")
+BASE_DIR = f"/workspaces/{REPOSITORY_NAME}"
+
 GEOLOCATION_DEV = "GEOLOCATION-0A41430434C388A9"
 GEOLOCATION_SPRINT = "GEOLOCATION-3F7C50D0C9065578"
 GEOLOCATION_LIVE = "GEOLOCATION-45AB48D9D6925ECC"
@@ -251,7 +254,7 @@ def build_dt_urls(dt_env_id, dt_env_type="live"):
         dt_tenant_live = f"https://{dt_env_id}.live.dynatrace.com"
     else:
       dt_tenant_apps = f"https://{dt_env_id}.{dt_env_type}.apps.dynatrace.com"
-      dt_tenant_live = f"https://{dt_env_name}.{dt_env_type}.dynatrace.com"
+      dt_tenant_live = f"https://{dt_env_id}.{dt_env_type}.dynatrace.com"
 
     # if environment is "dev" or "sprint"
     # ".dynatracelabs.com" not ".dynatrace.com"

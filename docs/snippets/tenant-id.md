@@ -9,7 +9,7 @@ https://abc12345.live.dynatrace.com
 https://abc12345.apps.dynatrace.com
 ```
 
-## Environment Type
+## Gather Details: Environment Type
 
 Make a note of your "environment type" based on your URL.
 
