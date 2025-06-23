@@ -26,7 +26,7 @@ if DEV_MODE == "FALSE":
             INSTALL_PLAYWRIGHT_BROWSERS = True
 
 if INSTALL_PLAYWRIGHT_BROWSERS:
-    subprocess.run(["playwright", "install", "chromium-headless-shell", "--only-shell"])
+    subprocess.run(["playwright", "install", "chromium-headless-shell", "--only-shell", "--with-deps"])
 
 for step in steps:
     step = step.strip()
