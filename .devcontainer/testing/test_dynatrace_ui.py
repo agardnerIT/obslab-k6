@@ -49,7 +49,6 @@ def test_dynatrace_ui(page: Page):
 
     # ################################################
     section_index = 1
-    section_type_text = "DQL"
     dql_query = retrieve_dql_query("fetch events dql")
     
     logger.info(f"Adding a new {app_name} section. section_type={SECTION_TYPE_DQL}. section_index={section_index}")

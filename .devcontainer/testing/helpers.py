@@ -210,32 +210,7 @@ def delete_document(page):
 # eg. { "name": "fetch events dql"}
 def retrieve_dql_query(snippet_name):
     output = subprocess.run(["runme", "print", snippet_name], capture_output=True, text=True)
-    # Spit the output and keep the newline characters
-    lines = output.stdout.splitlines(keepends=True)
-    
-    snippet = ""
-    current_position = 0
-    for line in lines:
-        # First line is always
-        # ``` {"name": "****"}
-        # So ignore it always
-        if current_position == 0:
-            current_position += 1
-            continue
-
-        # If the line starts with backticks
-        # We know it's the final useful line
-        # So immediately exit
-        if line.startswith("```"):
-            break
-
-        # If here
-        # Every other line is useful
-        # So append to the snippet
-        # Increment position counter to ensure we get all lines
-        snippet += line
-        current_position += 1
-    return snippet
+    return output.stdout
 
 def build_dt_urls(dt_env_id, dt_env_type="live"):
     if dt_env_type.lower() == "live":
