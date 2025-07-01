@@ -86,7 +86,7 @@ def get_app_frame_and_locator(page: Page):
 def wait_for_app_to_load(page: Page):
     frame_locator, frame = get_app_frame_and_locator(page)
     expect(frame).to_have_attribute(name="data-isloaded", value="true")
-    frame.locator("#content_root").is_visible(timeout=WAIT_TIMEOUT)
+    frame.locator("#content_root").is_visible()
 
     return frame_locator, frame
 
