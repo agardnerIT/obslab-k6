@@ -13,7 +13,7 @@ SECTION_TYPE_MARKDOWN = "Markdown"
 
 DT_ENVIRONMENT_ID = os.environ.get("DT_ENVIRONMENT_ID", "")
 DT_ENVIRONMENT_TYPE = os.environ.get("DT_ENVIRONMENT_TYPE", "live")
-DT_API_TOKEN = os.environ.get("DT_API_TOKEN", "")
+DT_API_TOKEN_TESTING = os.environ.get("DT_API_TOKEN_TESTING", "")
 TESTING_DYNATRACE_USER_EMAIL = os.environ.get("TESTING_DYNATRACE_USER_EMAIL", "")
 TESTING_DYNATRACE_USER_PASSWORD = os.environ.get("TESTING_DYNATRACE_USER_PASSWORD", "")
 REPOSITORY_NAME = os.environ.get("RepositoryName", "")
@@ -40,7 +40,7 @@ def create_github_issue(output, step_name):
 if (
       DT_ENVIRONMENT_ID == "" or
       DT_ENVIRONMENT_TYPE == "" or
-      DT_API_TOKEN == "" or
+      DT_API_TOKEN_TESTING == "" or
       TESTING_DYNATRACE_USER_EMAIL == "" or
       TESTING_DYNATRACE_USER_PASSWORD == ""
    ):
