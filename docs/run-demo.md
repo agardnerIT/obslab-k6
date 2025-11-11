@@ -24,7 +24,7 @@ docker ps
 Now run k6 with the demo script. Copy and paste this as-is into the terminal window:
 
 ``` {"name": "docker run k6"}
-source /workspaces/$RepositoryName/.env
+. /workspaces/$RepositoryName/.env
 
 docker run \
     -e K6_DYNATRACE_URL=$DT_URL \

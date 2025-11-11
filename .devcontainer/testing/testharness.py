@@ -1,20 +1,30 @@
 import subprocess
-import os
+import os, threading
 from helpers import *
 
 DT_API_TOKEN_TESTING = os.getenv("DT_API_TOKEN_TESTING","")
+
+# If testing token is not present
+# Test harness cannot proceed, immediately exit
+if DT_API_TOKEN_TESTING == "":
+    logger.error("DT_API_TOKEN_TESTING is missing. Please define and re-execute the test harness.")
+    exit(1)
 
 # Use the main token
 # To create short lived tokens
 # To run the test harness
 # Use these short-lived tokens during the test harness.
 DT_TENANT_APPS, DT_TENANT_LIVE = build_dt_urls(dt_env_id=DT_ENVIRONMENT_ID, dt_env_type=DT_ENVIRONMENT_TYPE)
-DT_API_TOKEN_TO_USE = create_dt_api_token(token_name="[devrel e2e testing] DT_K6_E2E_TEST_TOKEN", scopes=["metrics.ingest", "logs.ingest", "openTelemetryTrace.ingest", "openpipeline.events_sdlc"], dt_rw_api_token=DT_API_TOKEN_TESTING, dt_tenant_live=DT_TENANT_LIVE)
-set_env_var(key="DT_API_TOKEN", value=DT_API_TOKEN_TO_USE)
+DT_API_TOKEN_TO_USE = create_dt_api_token(token_name="[devrel e2e testing] DT_K6_E2E_TEST_TOKEN", scopes=["metrics.ingest", "openpipeline.events_sdlc"], dt_rw_api_token=DT_API_TOKEN_TESTING, dt_tenant_live=DT_TENANT_LIVE)
+store_env_var(key="DT_API_TOKEN", value=DT_API_TOKEN_TO_USE)
 
-
-steps = get_steps(f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing/steps.txt")
+steps = get_steps(f"{TESTING_BASE_DIR}/steps.txt")
 INSTALL_PLAYWRIGHT_BROWSERS = False
+
+def run_command_in_background(step):
+    command = ["runme", "run", step]
+    with open("nohup.out", "w") as f:
+        subprocess.Popen(["nohup"] + command, stdout=f, stderr=f)
 
 # Installing Browsers for Playwright is a time consuming task
 # So only install if we need to
@@ -30,28 +40,40 @@ if INSTALL_PLAYWRIGHT_BROWSERS:
 
 for step in steps:
     step = step.strip()
+    logger.info(f"Running {step}")
 
     if step.startswith("//") or step.startswith("#"):
-        print(f"[{step}] Ignore this step. It is commented out.")
+        logger.info(f"[{step}] Ignore this step. It is commented out.")
         continue
     
     if "test_" in step:
-        print(f"[{step}] This step is a Playwright test.")
+        logger.info(f"[{step}] This step is a Playwright test.")
         if DEV_MODE == "FALSE": # Standard mode. Run test headlessly
             output = subprocess.run(["pytest", "--capture=no", f"{TESTING_BASE_DIR}/{step}"], capture_output=True, text=True)
         else: # Interactive mode (when a maintainer is improving testing. Spin up the browser visually.
             output = subprocess.run(["pytest", "--capture=no", "--headed", f"{TESTING_BASE_DIR}/{step}"], capture_output=True, text=True)
 
         if output.returncode != 0 and DEV_MODE == "FALSE":
-            logger.error(f"Must create an issue: {step} {output}")
-            #create_github_issue(output, step_name=step)
+            send_business_event(output)
         else:
-            print(output)
+            logger.info(output)
     else:
-        output = subprocess.run(["runme", "run", step], capture_output=True, text=True)
-        print(f"[{step}] | {output.returncode} | {output.stdout}")
-        if output.returncode != 0 and DEV_MODE == "FALSE":
-            logger.error(f"Must create an issue: {step} {output}")
-            #create_github_issue(output, step_name=step)
+        command = ["runme", "run", step]
+
+        # If task should be run in background
+        # TODO: This is tech debt
+        # and should be refactored when
+        # runme beta run supports backgrounding
+        if "[background]" in step:
+            # Run the command in the background and capture the output
+            # Create a thread to run the command
+            thread = threading.Thread(target=run_command_in_background, args=(step,))
+            thread.start()
         else:
-            print(output)
+            print(f"Running: {command}")
+            output = subprocess.run(command, capture_output=True, text=True)
+            logger.info(output)
+            if output.returncode != 0 and DEV_MODE == "FALSE":
+                send_business_event(output)
+            else:
+                logger.info(output)

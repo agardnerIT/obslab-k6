@@ -1,14 +1,3 @@
-```python {"name":"check env vars exist"}
-import os
-
-DT_ENVIRONMENT_ID = os.environ.get("DT_ENVIRONMENT_ID", "")
-DT_ENVIRONMENT_TYPE = os.environ.get("DT_ENVIRONMENT_ID", "")
-DT_API_TOKEN = os.environ.get("DT_ENVIRONMENT_ID", "")
-
-if DT_ENVIRONMENT_ID == "" or DT_ENVIRONMENT_TYPE == "" or DT_API_TOKEN == "":
-    exit("Mandatory env vars missing. Exiting.")
-```
-
 ```python {"name":"wait for docker to start"}
 import subprocess
 import time

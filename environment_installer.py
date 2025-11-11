@@ -23,22 +23,10 @@ DT_TENANT_APPS, DT_TENANT_LIVE = build_dt_urls(dt_env_id=DT_ENVIRONMENT_ID, dt_e
 dotenv.set_key(dotenv_path=".env", key_to_set="DT_URL", value_to_set=DT_TENANT_LIVE, export=True)
 
 if CODESPACE_NAME.startswith("dttest-"):
-    # Set default repository for gh CLI
-    # Required for the e2e test harness
-    # If it needs to interact with GitHub (eg. create an issue for a failed e2e test)
-    run_command(["gh", "repo", "set-default", GITHUB_REPOSITORY])
-
-    # Now set up a label, used if / when the e2e test fails
-    # This may already be set (when demos are re-executed in repos)
-    # so catch error and always return true
-    # Otherwise the entire post-start.sh script could fail
-    # We can do this as we know we have permission to this repo
-    # (because we're the owner and testing it)
-    run_command(["gh", "label", "create", "e2e test failed", "--force"])
-    run_command(["pip", "install", "-r", f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing/requirements.txt", "--break-system-packages"])
-    run_command(["python",  f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing/testharness.py"])
+    run_command(["pip", "install", "-r", f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing/requirements.txt"])
+    run_command(["python3",  f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing/testharness.py"])
 
     # Testing finished. Destroy the codespace
-    run_command(["gh", "codespace", "delete", "--codespace", CODESPACE_NAME, "--force"])
+    #run_command(["gh", "codespace", "delete", "--codespace", CODESPACE_NAME, "--force"])
 else:
     send_startup_ping(demo_name="obslab-k6")

@@ -1,3 +1,9 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  dynatrace.sendBizEvent('page_load', {"page": "index.md"});
+});
+</script>
+
 # Dynatrace Observability Lab: Grafana k6 Observability
 
 --8<-- "snippets/disclaimer.md"

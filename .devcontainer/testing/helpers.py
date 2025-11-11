@@ -2,8 +2,8 @@ import os, re, subprocess, getpass
 from playwright.sync_api import Page, expect, FrameLocator
 from loguru import logger
 import pytest
-import datetime
 import requests
+import datetime
 
 WAIT_TIMEOUT = 10000
 SECTION_TYPE_METRICS = "Metrics"
@@ -17,9 +17,19 @@ DT_API_TOKEN_TESTING = os.environ.get("DT_API_TOKEN_TESTING", "")
 TESTING_DYNATRACE_USER_EMAIL = os.environ.get("TESTING_DYNATRACE_USER_EMAIL", "")
 TESTING_DYNATRACE_USER_PASSWORD = os.environ.get("TESTING_DYNATRACE_USER_PASSWORD", "")
 REPOSITORY_NAME = os.environ.get("RepositoryName", "")
-TESTING_BASE_DIR = f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing"
-
 DEV_MODE = os.environ.get("DEV_MODE", "FALSE").upper() # This is a string. NOT a bool.
+CURRENT_USER = getpass.getuser()
+GITHUB_REPOSITORY = os.environ.get("GITHUB_REPOSITORY","")
+
+TESTING_BASE_DIR = ""
+if DEV_MODE == "TRUE":
+    print("DEV_MODE IS TRUE!")
+    TESTING_BASE_DIR = "./"
+    print(f"TESTING_BASE_DIR: {TESTING_BASE_DIR}")
+else:
+    TESTING_BASE_DIR = f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing"
+print(f"DEV_MODE: {DEV_MODE}")
+print(f"TESTING_BASE_DIR: {TESTING_BASE_DIR}")
 
 def get_steps(filename):
     with open(filename, mode="r") as steps_file:
@@ -31,11 +41,6 @@ def get_steps(filename):
             steps_clean.append(step)
     
     return steps_clean
-
-# TODO: This assumes env is running on GitHub Codespaces. Improve this
-def create_github_issue(output, step_name):
-    subprocess.run(["gh", "issue", "create", "--label", "e2e test failed", "--title", f"Failed on step: {step_name}", "--body", f"The end to end test script failed on step: {step_name}\n\n## Output\n```\n{output.stdout}\n```\n\n## stderr \n```\n{output.stderr}\n```"])
-    exit(0)
 
 if (
       DT_ENVIRONMENT_ID == "" or
@@ -49,6 +54,33 @@ if (
        print(f"TESTING_DYNATRACE_USER_EMAIL: {TESTING_DYNATRACE_USER_EMAIL}")
        print(f"TESTING_DYNATRACE_USER_PASSWORD: {TESTING_DYNATRACE_USER_PASSWORD}")
        exit()
+
+def send_business_event(error_obj_json):
+    DT_APPS_URL, DT_LIVE_URL = build_dt_urls(dt_env_id=DT_ENVIRONMENT_ID, dt_env_type=DT_ENVIRONMENT_TYPE)
+    DT_API_TOKEN_TO_USE = create_dt_api_token(token_name=f"[{GITHUB_REPOSITORY}] bizevent for broken e2e test", scopes=["bizevents.ingest"], dt_rw_api_token=DT_API_TOKEN_TESTING, dt_tenant_live=DT_LIVE_URL)
+    headers = {
+        "Content-Type": "application/cloudevent+json",
+        "Authorization": f"Api-Token {DT_API_TOKEN_TO_USE}"
+    }
+    payload = {
+        "specversion": "1.0",
+        "id": "1",
+        "source": GITHUB_REPOSITORY,
+        "type": "e2e.test.failed",
+        "event.provider": f"github.com/{GITHUB_REPOSITORY}",
+        "data": {
+            "body": "e2e test failed",
+            "returncode": error_obj_json.returncode,
+            "stdout": error_obj_json.stdout,
+            "stderr": error_obj_json.stderr
+        }
+    }
+    resp = requests.post(
+        url=f"{DT_LIVE_URL}/api/v2/bizevents/ingest",
+        headers=headers,
+        json=payload
+    )
+    logger.info(resp.content)
 
 def login(page: Page):
     page.goto("https://sso.dynatrace.com")
@@ -259,34 +291,6 @@ def create_dt_api_token(token_name, scopes, dt_rw_api_token, dt_tenant_live):
 
 # Set a system-wide environment variable
 # Defaults to bash shell but can be overriden
-def store_env_var(key, value, env_filepath=f"/workspaces/{REPOSITORY_NAME}/.devcontainer/testing/.env"):
-    with open(file=env_filepath, mode="a+") as env_file:
-        env_file.write(f"{key}={value}")
-
-def set_env_var(key, value, env_filename=".bashrc"):
-    current_user = getpass.getuser()
-
-    # Open the /etc/environment file in append mode
-    env_var_file = f"/home/{current_user}/{env_filename}"
-    with open(env_var_file, "a") as file:
-        file.write(f"\nexport {key}={value}")
-
-    # Reload the environment variables
-    os.system(f". {env_var_file}")
-
-    # Source the file and capture the environment variables
-    command = f". {env_var_file} && env"
-    proc = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, executable='/bin/bash')
-    output, _ = proc.communicate()
-
-    # Update the current environment with the variables from the file
-    for line in output.decode().splitlines():
-        k, _, v = line.partition("=")
-        if k == "DT_API_TOKEN":
-            logger.info(f"Setting {k}={v}")
-        os.environ[key] = value
-    
-    # Verify the environment variable is set
-    logger.info(f"New Value set to: {os.environ.get('DT_API_TOKEN')}")
-
-    # Now the environment variables should be updated in the current Python process
+def store_env_var(key, value):
+    with open(file=".env", mode="a") as env_file:
+        env_file.write(f"{key}={value}\n")
